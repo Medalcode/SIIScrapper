@@ -6,39 +6,116 @@ Este documento contiene las FAQs extraídas y normalizadas desde el scraping ini
 
 ## Resumen de FAQs (normalizadas)
 
-1. **¿Cuál es la URL de esta página?**
+<!-- Insertar FAQs completas con respuestas -->
 
-	- Fuente: `boletas`
-	- URL ejemplo: https://www.sii.cl/servicios_online/1037-1111.html
+### 1. ¿Cuál es la URL de esta página?
 
-2. **¿Qué contiene esta página?**
+- Fuente: `boletas`
+- Archivo origen: `data\boletas\servicios_online_1037_1111_html.md`
 
-	- Fuente: `boletas`
-	- Contenido (resumen):
+Respuesta:
 
-	  SII | Servicio de Impuestos Internos
+```
+https://www.sii.cl/servicios_online/1037-1111.html
+```
 
-	  Clave tributaria, mandatario digital y representantes electrónicos; RUT, Inicio de Actividades e Inscripción en Registros; Autorización de documentos tributarios; Boleta de ventas y servicios electrónica; Boletas de honorarios electrónicas; Infracciones, pago de giros y condonaciones; Avalúos y contribuciones de bienes raíces; Impuesto a aviones, helicópteros, yates y vehículos de alto valor; Peticiones administrativas y otras solicitudes; ...
+---
 
-3. **¿Cuál es la URL de esta página?**
+### 2. ¿Qué contiene esta página?
 
-	- Fuente: `boletas`
-	- URL ejemplo: https://www.sii.cl/servicios_online/1048-4504.html
+- Fuente: `boletas`
+- Archivo origen: `data\boletas\servicios_online_1037_1111_html.md`
 
-4. **¿Qué contiene esta página?**
+Respuesta (extracto):
 
-	- Fuente: `boletas`
-	- Contenido (resumen): similar al anterior (lista de servicios y trámites disponibles en SII relacionados con boletas y declaraciones).
+SII | Servicio de Impuestos Internos
 
-5. **¿Cuál es la URL de esta página?**
+Clave tributaria, mandatario digital y representantes electrónicos
 
-	- Fuente: `boletas`
-	- URL ejemplo: https://www.sii.cl/servicios_online/renta/
+RUT, Inicio de Actividades e Inscripción en Registros
 
-6. **¿Qué contiene esta página?**
+Peticiones administrativas y otras solicitudes
 
-	- Fuente: `boletas`
-	- Contenido (resumen): listado de servicios generales del SII (ver arriba).
+Autorización de documentos tributarios
+
+Boleta de ventas y servicios electrónica
+
+Boletas de honorarios electrónicas
+
+Infracciones, pago de giros y condonaciones
+
+Avalúos y contribuciones de bienes raíces
+
+Impuesto a aviones, helicópteros, yates y vehículos de alto valor
+
+(...contenido ampliado en el archivo original...)
+
+---
+
+### 3. ¿Cuál es la URL de esta página?
+
+- Fuente: `boletas`
+- Archivo origen: `data\boletas\servicios_online_1048_4504_html.md`
+
+Respuesta:
+
+```
+https://www.sii.cl/servicios_online/1048-4504.html
+```
+
+---
+
+### 4. ¿Qué contiene esta página?
+
+- Fuente: `boletas`
+- Archivo origen: `data\boletas\servicios_online_1048_4504_html.md`
+
+Respuesta (extracto):
+
+SII | Servicio de Impuestos Internos
+
+Clave tributaria, mandatario digital y representantes electrónicos
+
+RUT, Inicio de Actividades e Inscripción en Registros
+
+Peticiones administrativas y otras solicitudes
+
+Autorización de documentos tributarios
+
+Boleta de ventas y servicios electrónica
+
+Boletas de honorarios electrónicas
+
+Infracciones, pago de giros y condonaciones
+
+(...contenido ampliado en el archivo original...)
+
+---
+
+### 5. ¿Cuál es la URL de esta página?
+
+- Fuente: `boletas`
+- Archivo origen: `data\boletas\servicios_online_renta.md`
+
+Respuesta:
+
+```
+https://www.sii.cl/servicios_online/renta/
+```
+
+---
+
+### 6. ¿Qué contiene esta página?
+
+- Fuente: `boletas`
+- Archivo origen: `data\boletas\servicios_online_renta.md`
+
+Respuesta (extracto):
+
+SII | Servicio de Impuestos Internos — listado de servicios y trámites (clave tributaria, RUT, boletas electrónicas, declaraciones juradas, consultas, trámites F29/F50, etc.)
+
+(...contenido ampliado en el archivo original...)
+
 
 
 --
