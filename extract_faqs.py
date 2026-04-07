@@ -87,7 +87,7 @@ def extract_from_md(path: Path):
     return out
 
 
-def run(data_dir='data', out_file='data/faqs.json'):
+def run(data_dir='data', out_file='data/faqs.json', max_answer_chars=1000):
     p = Path(data_dir)
     out = []
     if not p.exists():
@@ -101,14 +101,25 @@ def run(data_dir='data', out_file='data/faqs.json'):
                 continue
             try:
                 faqs = extract_from_md(f)
+                # truncar respuesta si es muy larga
+                for q in faqs:
+                    ans = q.get('answer','') or ''
+                    if len(ans) > max_answer_chars:
+                        q['answer'] = ans[:max_answer_chars].rsplit('\n',1)[0]
                 out.extend(faqs)
             except Exception as e:
                 print('error leyendo', f, e)
 
     Path(out_file).parent.mkdir(parents=True, exist_ok=True)
     Path(out_file).write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8')
-    print(f'Exportadas {len(out)} FAQs a {out_file}')
+    print(f'Exportadas {len(out)} FAQs a {out_file} (respuestas truncadas a {max_answer_chars} chars)')
 
 
 if __name__ == '__main__':
-    run()
+    import argparse
+    parser = argparse.ArgumentParser(description='Extrae FAQs desde archivos MD y genera JSON con respuestas truncadas')
+    parser.add_argument('--data-dir', default='data', help='Carpeta con los .md')
+    parser.add_argument('--out-file', default='data/faqs_final.json', help='Archivo JSON de salida')
+    parser.add_argument('--max-answer-chars', type=int, default=1000, help='Máximo de caracteres por respuesta')
+    args = parser.parse_args()
+    run(data_dir=args.data_dir, out_file=args.out_file, max_answer_chars=args.max_answer_chars)

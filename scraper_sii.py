@@ -13,6 +13,7 @@ Salida: archivos Markdown en `data/<categoria>/` con URL y contenido.
 """
 import argparse
 import hashlib
+import json
 import os
 import re
 import sys
@@ -42,8 +43,12 @@ def obtener_html_requests(url, timeout=10):
     try:
         r = requests.get(url, headers=headers, timeout=timeout)
         r.raise_for_status()
-        return r.text
+        text = r.text
+        snippet = text[:300].replace("\n", " ")
+        print(f"  [requests] status={r.status_code} len={len(text)} snippet={snippet!s}")
+        return text
     except Exception:
+        print(f"  [requests] error fetching {url}")
         return None
 
 
@@ -54,11 +59,15 @@ def obtener_html_playwright(url, timeout=15000):
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
             page = browser.new_page()
-            page.goto(url, timeout=timeout)
+            response = page.goto(url, timeout=timeout)
             html = page.content()
+            status = response.status if response else None
+            snippet = html[:300].replace("\n", " ")
+            print(f"  [playwright] status={status} len={len(html)} snippet={snippet!s}")
             browser.close()
             return html
     except Exception:
+        print(f"  [playwright] error fetching {url}")
         return None
 
 
@@ -75,18 +84,32 @@ def limpiar_texto(html, min_line_len=40):
         except Exception:
             pass
 
-    texto = soup.get_text(separator="\n")
+    body = soup.body or soup
 
-    lineas = []
-    for linea in texto.splitlines():
-        linea = linea.strip()
-        # filtra líneas cortas que suelen ser menús o basura
-        if len(linea) >= min_line_len:
-            # normalizar espacios
-            linea = re.sub(r"\s+", " ", linea)
-            lineas.append(linea)
+    parts = []
+    # recorrer en orden los elementos que suelen contener contenido útil
+    for el in body.find_all(['h1','h2','h3','h4','p','li'], recursive=True):
+        text = el.get_text(separator=' ', strip=True)
+        if not text:
+            continue
+        tag = el.name.lower()
+        if tag.startswith('h'):
+            level = int(tag[1]) if len(tag) > 1 and tag[1].isdigit() else 2
+            prefix = '#' * min(level, 4)
+            parts.append(f"{prefix} {text}")
+        elif tag == 'li':
+            parts.append(f"- {text}")
+        else:
+            parts.append(text)
 
-    return "\n\n".join(lineas)
+    # normalizar y filtrar por longitud de bloque
+    bloques = []
+    for bloque in parts:
+        b = re.sub(r"\s+", " ", bloque).strip()
+        if len(b) >= min_line_len:
+            bloques.append(b)
+
+    return "\n\n".join(bloques)
 
 
 def obtener_links(html, base_url, domain=None):
@@ -175,6 +198,21 @@ def guardar_markdown(output_dir, categoria, url, contenido):
         f.write(f"## Contenido\n\n{contenido}\n")
 
 
+def guardar_json(output_dir, categoria, url, contenido):
+    carpeta = os.path.join(output_dir, categoria)
+    os.makedirs(carpeta, exist_ok=True)
+    nombre = safe_filename_from_url(url)
+    ruta = os.path.join(carpeta, f"{nombre}.json")
+    doc = {
+        "source": "sii.cl",
+        "url": url,
+        "categoria": categoria,
+        "contenido": contenido[:100000]  # truncar si es muy largo
+    }
+    with open(ruta, "w", encoding="utf-8") as f:
+        json.dump(doc, f, ensure_ascii=False, indent=2)
+
+
 def crawl(start_url, max_pages=50, use_playwright=False, min_line_len=40, output_dir="data"):
     to_visit = [start_url]
     visited = set()
@@ -197,9 +235,10 @@ def crawl(start_url, max_pages=50, use_playwright=False, min_line_len=40, output
             continue
 
         texto = limpiar_texto(html, min_line_len=min_line_len)
+        links = obtener_links(html, url, domain=domain)
+        print(f"  texto_len={len(texto)} | links_encontrados={len(links)}")
         if len(texto) < 200:
             # demasiado corto para ser útil
-            links = obtener_links(html, url, domain=domain)
             for l in links:
                 if l not in visited and l not in to_visit and len(visited) + len(to_visit) < max_pages:
                     to_visit.append(l)
@@ -214,8 +253,8 @@ def crawl(start_url, max_pages=50, use_playwright=False, min_line_len=40, output
         else:
             categoria = clasificar_texto(texto)
             guardar_markdown(output_dir, categoria, url, texto)
-
-        links = obtener_links(html, url, domain=domain)
+            guardar_json(output_dir, categoria, url, texto)
+            print(f"  guardado en: {os.path.join(output_dir, categoria)}")
         for l in links:
             if l not in visited and l not in to_visit and len(visited) + len(to_visit) < max_pages:
                 to_visit.append(l)
